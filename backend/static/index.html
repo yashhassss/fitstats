@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitStats - Your Workout Tracker</title>
+    
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <link rel="stylesheet" href="styles.css">
+    <script src="app.js" defer></script>
+</head>
+<body class="dark-mode">
+    <nav class="navbar">
+        <div class="logo">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3.75 8.25V17.25C3.75 17.6642 4.08579 18 4.5 18H6.75C7.16421 18 7.5 17.6642 7.5 17.25V8.25C7.5 7.83579 7.16421 7.5 6.75 7.5H4.5C4.08579 7.5 3.75 7.83579 3.75 8.25Z" fill="#007aff"/><path d="M9.75 5.25V17.25C9.75 17.6642 10.0858 18 10.5 18H12.75C13.1642 18 13.5 17.6642 13.5 17.25V5.25C13.5 4.83579 13.1642 4.5 12.75 4.5H10.5C10.0858 4.5 9.75 4.83579 9.75 5.25Z" fill="#007aff"/><path d="M15.75 2.25V17.25C15.75 17.6642 16.0858 18 16.5 18H18.75C19.1642 18 19.5 17.6642 19.5 17.25V2.25C19.5 1.83579 19.1642 1.5 18.75 1.5H16.5C16.0858 1.5 15.75 1.83579 15.75 2.25Z" fill="#007aff"/></svg>
+            <h1>FitStats</h1>
+        </div>
+        <div class="nav-tabs">
+            <button id="tab-workout" class="nav-tab active">Workout</button>
+            <button id="tab-routines" class="nav-tab">Routines</button>
+            <button id="tab-history" class="nav-tab">History</button>
+            <button id="tab-progress" class="nav-tab">Progress</button>
+            <button id="tab-settings" class="nav-tab"><i class="ph-bold ph-gear"></i></button>
+        </div>
+    </nav>
+
+    <div class="container">
+        
+        <div id="welcome-banner" class="welcome-banner">
+            <p>Welcome back! Your anonymous User ID is:</p>
+            <span id="user-id-display">Loading...</span>
+        </div>
+        <div id="page-workout" class="page active">
+            <div id="start-workout-container" class="start-workout-container">
+                <input type="text" id="new-workout-name" class="workout-title-input" placeholder="Name your workout (e.g., Push Day)">
+                <button id="start-empty-workout-btn" class="button-primary" style="width:100%;">Start Empty Workout</button>
+                <div class="divider-or"><span>OR</span></div>
+                <h3>Start from a saved routine:</h3>
+                <div id="start-routine-list"></div>
+            </div>
+            
+            <div id="workout-area" class="workout-area hidden">
+                <div class="workout-header">
+                    <input type="text" id="workout-title-input" class="workout-title-input" value="New Workout">
+                    <div class="live-stats">
+                        <div class="stat-item">
+                            <span class="stat-value" id="live-timer">00:00</span>
+                            <span class="stat-label">Time</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value" id="live-volume">0 kg</span>
+                            <span class="stat-label">Volume</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value" id="live-sets">0</span>
+                            <span class="stat-label">Sets</span>
+                        </div>
+                    </div>
+                </div>
+                <div id="exercise-list"></div>
+                <button id="add-exercise-btn" class="add-exercise-btn">+ Add Exercise</button>
+                <button id="finish-workout-btn" class="finish-workout-btn">
+                    <i class="ph-bold ph-check-circle"></i> Finish Workout
+                </button>
+            </div>
+        </div>
+
+        <div id="page-routines" class="page hidden">
+            <div class="routines-container">
+                <div class="routines-header">
+                    <h2>Your Routines</h2>
+                    <button id="create-routine-btn" class="button-primary">
+                        <i class="ph-bold ph-plus"></i> Create New
+                    </button>
+                </div>
+                <div id="routines-list-container"></div>
+            </div>
+        </div>
+        <div id="page-history" class="page hidden">
+            <div class="history-container">
+                <h2>Workout History</h2>
+                <div id="history-list-container"></div>
+            </div>
+        </div>
+        <div id="page-progress" class="page hidden">
+            <div class="progress-container">
+                <h2>Analyze Your Progress</h2>
+                <p>Select an exercise to see your strength progress over time.</p>
+                <input type="text" id="progress-search-input" class="text-input" placeholder="Search for an exercise to chart...">
+
+                <div id="progress-search-results" class="modal-list hidden"></div>
+
+                <div id="progress-chart-container" class="chart-container">
+                    
+                </div>
+            </div>
+        </div>
+        <div id="page-settings" class="page hidden">
+            <div class="settings-container">
+                <h2>Settings</h2>
+                <div class="setting-item">
+                    <label for="default-rest-time">Default Rest Time (seconds)</label>
+                    <input type="number" id="default-rest-time" class="text-input" value="90">
+                </div>
+                <button id="save-settings-btn" class="button-primary">Save Settings</button>
+            </div>
+        </div>
+
+    </div>
+    <div id="add-exercise-modal" class="modal hidden">
+        <div class="modal-content">
+            <span id="close-add-exercise-modal-btn" class="close-btn">&times;</span>
+            <h2>Add Exercise to Workout</h2>
+            <input type="text" id="search-exercise-input" class="text-input" placeholder="Search exercises...">
+            <div id="modal-exercise-list" class="modal-list">
+            </div>
+            <button id="create-exercise-from-search-btn" class="button-secondary hidden" style="width:100%; margin-top: 10px;">
+                Create exercise...
+            </button>
+        </div>
+    </div>
+    
+    <div id="create-routine-modal" class="modal hidden">
+        <div class="modal-content">
+            <span id="close-create-routine-modal-btn" class="close-btn">&times;</span>
+            <h2>Create New Routine</h2>
+            <input type="text" id="new-routine-name-input" class="text-input" placeholder="Enter routine name (e.g., Push Day)">
+            <h3>Add Exercises</h3>
+            <input type="text" id="search-routine-exercise-input" class="text-input" placeholder="Search exercises to add...">
+            <div id="routine-exercise-search-list" class="modal-list"></div>
+            <h3>Exercises in this Routine:</h3>
+            <div id="routine-exercise-selected-list" class="modal-list-selected"></div>
+            <button id="save-routine-btn" class="button-primary" style="width: 100%;">Save Routine</button>
+        </div>
+    </div>
+    <div id="create-exercise-modal" class="modal hidden">
+        <div class="modal-content">
+            <span id="close-create-exercise-modal-btn" class="close-btn">&times;</span>
+            <h2>Create New Exercise</h2>
+            <input type="text" id="new-exercise-name-input" class="text-input" placeholder="Exercise Name (e.g., My Custom Lift)">
+            <select id="new-exercise-category-select" class="text-input">
+                <option value="Custom">Custom</option>
+                <option value="Chest">Chest</option>
+                <option value="Back">Back</option>
+                <option value="Legs">Legs</option>
+                <option value="Shoulders">Shoulders</option>
+                <option value="Arms">Arms</option>
+                <option value="Core">Core</option>
+            </select>
+            <button id="save-exercise-btn" class="button-primary" style="width: 100%;">Save Exercise</button>
+        </div>
+    </div>
+    <div id="modal-backdrop" class="modal-backdrop hidden"></div>
+
+</body>
+</html>
